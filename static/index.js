@@ -67,3 +67,40 @@ $(function () {
     });
 })
 
+function displayBot(){
+    $('.chatbox__button').click(function(){
+        $('.chatbox__chat').toggle()
+    })
+    askBot()
+}
+
+function askBot(){
+    $('#send_button').click(function(){
+        var user_bot_input_text = $('#bot_input_text').val()
+
+        if(user_bot_input_text != " " ){
+            $('#chat_messages').append('<div class="user__messages">+ user_bot_input_text + </div>')
+
+            $('#bot_input_text').val(' ')
+
+            let chat_input_data ={
+                "user_bot_input_text": user_bot_input_text
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: "/bot-response",
+            data: JSON.stringify(chat_input_data),
+            dataType: "json",
+            contentType: 'application/json',
+            sucess: function(result){
+                $('#chat_messages').append('<div class="bot__messages"> +result.bot_response+ </div>')
+                $('.chatbox__messages__cotainer').animate({
+                    scrollTop: $('.chatbox__messages__cotainer')[0].scrollHeight}, 1000)
+            },
+            error: function(result){
+              alert(result.responseJSON.message)  
+            }
+        })
+    })
+}
